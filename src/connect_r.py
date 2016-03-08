@@ -1,4 +1,4 @@
-import time
+
 class Connect_R:
     'creates connect r'
 
