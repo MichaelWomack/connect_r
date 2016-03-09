@@ -53,12 +53,17 @@ class Connect_R:
 
     def prompt_move(self):
         player = self.current_players_turn()
-        col = int(input(player + '\'s move: '))
-        if not (col in range(0, self.M)):
-            print('Out of bounds!')
+        try:
+            col = int(input(player + '\'s move: '))
+            assert col in range(0, self.M)
+        except ValueError:
+            print("Move must be an integer!")
             self.prompt_move()
-        else:
-            self.place_move(col, player)
+        except AssertionError:
+            print("Out of Bounds!")
+            self.prompt_move()
+
+        self.place_move(col, player)
 
     def is_empty(self, row, col):
         return self.rows[row][col] == ' * '
@@ -83,6 +88,7 @@ class Connect_R:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.game_over = True
+                            print("Row Win!:{}".format(player))
                             return self.game_over
                         index += 1
                     else:
@@ -98,12 +104,47 @@ class Connect_R:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.game_over = True
+                            print("Column Win!:{}".format(player))
                             return self.game_over
                         index -= 1
                     else:
                         break
 
+        # check diagonals L --> R high to low
+        for col in range(self.M - self.R + 1):
+            for row in reversed(range(self.N - self.R + 1)):
+                col_index = col
+                row_index = row
+                num_to_win = self.R
+                while col_index in range(self.M) and row_index in range(self.N):
+                    if self.rows[row_index][col_index] == player:
+                        num_to_win -= 1
+                        if num_to_win == 0:
+                            self.game_over = True
+                            print("Diagonal Win!:{}".format(player))
+                            return self.game_over
+                    else:
+                        num_to_win = 0
+                    row_index += 1
+                    col_index += 1
 
+        # check diagonals L-->R low to high
+        # for col in range(self.M - self.R + 1):
+            for row in range(self.R - 1, self.N):
+                col_index = col
+                row_index = row
+                num_to_win = self.R
+                while col_index in range(self.M) and row_index in range(self.N):
+                    if self.rows[row_index][col_index] == player:
+                        num_to_win -= 1
+                        if num_to_win == 0:
+                            self.game_over = True
+                            print("Diagonal 2 Win!")
+                            return self.game_over
+                    else:
+                        num_to_win = 0
+                    row_index -= 1
+                    col_index += 1
 
 game = Connect_R()
 game.draw_board()
