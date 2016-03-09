@@ -27,7 +27,7 @@ class Connect_R:
         self.N = 6
         self.R = 4
 
-        self.rows = [[' * ' for col in range(0, self.M)] for row in range(0, self.N)]
+        self.rows = [[' * ' for col in range(self.M)] for row in range(0, self.N)]
         self.game_over = False
 
     def draw_board(self):
@@ -42,6 +42,7 @@ class Connect_R:
         else:
             bottom_index = self.N - 1
             placed = False
+
             while bottom_index >= 0 and not placed:
                 if self.is_empty(bottom_index, col):
                     self.rows[bottom_index][col] = ' ' + char + ' '
@@ -73,8 +74,8 @@ class Connect_R:
         # M is num columns, N is num rows
 
         # check rows
-        for row in self.rows:
-            for col_index in range(0, self.M - self.R + 1):
+        for row in reversed(self.rows):
+            for col_index in range(self.M - self.R + 1):
                 num_to_win = self.R
                 index = col_index
                 while index < col_index + self.R:
@@ -82,11 +83,25 @@ class Connect_R:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.game_over = True
+                            return self.game_over
                         index += 1
                     else:
                         break
 
         # check cols
+        for col in range(self.M):
+            for row in reversed(range(self.R - 1, self.N)):
+                num_to_win = self.R
+                index = row
+                while index > row - self.R - 1:
+                    if self.rows[index][col] == player:
+                        num_to_win -= 1
+                        if num_to_win == 0:
+                            self.game_over = True
+                            return self.game_over
+                        index -= 1
+                    else:
+                        break
 
 
 
