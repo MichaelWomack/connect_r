@@ -1,3 +1,5 @@
+from exceptions import OutOfBoundsError, ColumnFullError
+
 class Connect_R:
     'creates connect r'
 
@@ -34,36 +36,33 @@ class Connect_R:
         for i in range(0, self.N):
             print("  ".join(self.rows[i]))
 
-    def place_move(self, col, char):
-        # Get bottom most row (highest index), or where next index not ' * '
-        if not self.is_empty(0, col):
-            print("Column is full!")
-            self.prompt_move()
-        else:
-            bottom_index = self.N - 1
-            placed = False
+    def place_move(self, col, player):
+        bottom_index = self.N - 1
+        placed = False
 
-            while bottom_index >= 0 and not placed:
-                if self.is_empty(bottom_index, col):
-                    self.rows[bottom_index][col] = char
-                    placed = True
-                    self.p1_turn = not self.p1_turn
-                else:
-                    bottom_index -= 1
+        while bottom_index >= 0 and not placed:
+            if self.is_empty(bottom_index, col):
+                self.rows[bottom_index][col] = player
+                placed = True
+                self.p1_turn = not self.p1_turn
+            else:
+                bottom_index -= 1
 
     def prompt_move(self):
         player = self.current_players_turn()
         try:
             col = int(input(player + '\'s move: '))
-            assert col in range(0, self.M)
+            if col not in range(0, self.M):
+                raise Exception("Out of Bounds!")
+            if not self.is_empty(0, col):
+                raise Exception("Column is Full!")
+            self.place_move(col, player)
         except ValueError:
             print("Move must be an integer!")
             self.prompt_move()
-        except AssertionError:
-            print("Out of Bounds!")
+        except Exception as e:
+            print(e)
             self.prompt_move()
-
-        self.place_move(col, player)
 
     def is_empty(self, row, col):
         return self.rows[row][col] == '*'
@@ -151,6 +150,9 @@ class Connect_R:
                     row_index -= 1
                     col_index += 1
 
+
+if __name__ == "__main__":
+    pass
 game = Connect_R()
 game.draw_board()
 

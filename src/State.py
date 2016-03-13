@@ -1,3 +1,6 @@
+from connect_r import Connect_R
+
+
 #def MiniMax-Decision(state) returns an action
 
 #def Max-Value(state) returns a utility value
@@ -29,4 +32,29 @@
     # Terminal test function that takes state and returns whether the game
     # is over or not.
 
-    # Recursiv min - max function.
+    # Recursive min - max function.
+game = Connect_R()
+state = game.rows
+
+def display_state(state):
+    for i in range(game.N):
+        print("  ".join(state[i]))
+
+
+def generate_states(state):
+
+
+
+
+
+
+if __name__ == "__main__":
+    game = Connect_R()
+    display_state(game.rows)
+    # game.draw_board()
+    # while not game.game_over:
+    #     # Represents one iteration or turn
+    #     game.prompt_move()
+    #     game.draw_board()
+    #     game.check_game_over(game.p1)
+    #     game.check_game_over(game.p2)
