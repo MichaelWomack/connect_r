@@ -1,5 +1,3 @@
-from exceptions import OutOfBoundsError, ColumnFullError
-
 class Connect_R:
     'creates connect r'
 
