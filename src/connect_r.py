@@ -27,12 +27,12 @@ class Connect_R:
         self.N = 6
         self.R = 4
 
-        self.rows = [[' * ' for col in range(self.M)] for row in range(0, self.N)]
+        self.rows = [['*' for col in range(self.M)] for row in range(0, self.N)]
         self.game_over = False
 
     def draw_board(self):
         for i in range(0, self.N):
-            print("".join(self.rows[i]))
+            print("  ".join(self.rows[i]))
 
     def place_move(self, col, char):
         # Get bottom most row (highest index), or where next index not ' * '
@@ -45,7 +45,7 @@ class Connect_R:
 
             while bottom_index >= 0 and not placed:
                 if self.is_empty(bottom_index, col):
-                    self.rows[bottom_index][col] = ' ' + char + ' '
+                    self.rows[bottom_index][col] = char
                     placed = True
                     self.p1_turn = not self.p1_turn
                 else:
@@ -66,7 +66,7 @@ class Connect_R:
         self.place_move(col, player)
 
     def is_empty(self, row, col):
-        return self.rows[row][col] == ' * '
+        return self.rows[row][col] == '*'
 
     def current_players_turn(self):
         if self.p1_turn:
@@ -75,7 +75,7 @@ class Connect_R:
             return self.p2
 
     def check_game_over(self, player):
-        player = ' ' + player + ' '
+        # player = ' ' + player + ' '
         # M is num columns, N is num rows
 
         # check rows
@@ -88,7 +88,7 @@ class Connect_R:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.game_over = True
-                            print("Row Win!:{}".format(player))
+                            print("Row Win!: {}".format(player))
                             return self.game_over
                         index += 1
                     else:
@@ -104,7 +104,7 @@ class Connect_R:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.game_over = True
-                            print("Column Win!:{}".format(player))
+                            print("Column Win!: {}".format(player))
                             return self.game_over
                         index -= 1
                     else:
@@ -121,7 +121,7 @@ class Connect_R:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.game_over = True
-                            print("Diagonal Win!:{}".format(player))
+                            print("Diagonal Win!: {}".format(player))
                             return self.game_over
                     else:
                         num_to_win = 0
