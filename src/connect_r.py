@@ -75,8 +75,13 @@ class Connect_R:
             return self.p2
 
     def check_game_over(self, player):
-        # player = ' ' + player + ' '
         # M is num columns, N is num rows
+
+        # check if board full for draw
+        if '*' not in self.rows[0]:
+            print("Draw!")
+            self.game_over = True
+            return self.game_over
 
         # check rows
         for row in reversed(self.rows):
