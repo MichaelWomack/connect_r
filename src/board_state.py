@@ -1,4 +1,4 @@
-class Connect_R:
+class BoardState:
     'creates connect r'
 
     # Generate entire state space (to depth), evaluate the bottom (utility or heuristic)
@@ -14,21 +14,17 @@ class Connect_R:
 
     # Block other person from winning,
 
-    def __init__(self):
-        # self.M = int(input('Enter the width: ')) # Columns
-        # self.N = int(input('Enter the height: ')) # Rows
-        # self.R = int(input('Enter the win requirement: '))
+    def __init__(self, width, height, win_req):
+        self.current_player = 'r'
 
-        self.p1 = 'r'
-        self.p2 = 'b'
-        self.p1_turn = True
-
-        self.M = 7
-        self.N = 6
-        self.R = 4
+        self.M = width
+        self.N = height
+        self.R = win_req
 
         self.rows = [['*' for col in range(self.M)] for row in range(0, self.N)]
-        self.game_over = False
+        self.state_terminated = False
+        self.termination_message = None
+
 
     def draw_board(self):
         for i in range(0, self.N):
@@ -42,43 +38,28 @@ class Connect_R:
             if self.is_empty(bottom_index, col):
                 self.rows[bottom_index][col] = player
                 placed = True
-                self.p1_turn = not self.p1_turn
             else:
                 bottom_index -= 1
 
-    def prompt_move(self):
-        player = self.current_players_turn()
-        try:
-            col = int(input(player + '\'s move: '))
-            if col not in range(0, self.M):
-                raise Exception("Out of Bounds!")
-            if not self.is_empty(0, col):
-                raise Exception("Column is Full!")
-            self.place_move(col, player)
-        except ValueError:
-            print("Move must be an integer!")
-            self.prompt_move()
-        except Exception as e:
-            print(e)
-            self.prompt_move()
 
     def is_empty(self, row, col):
         return self.rows[row][col] == '*'
 
-    def current_players_turn(self):
-        if self.p1_turn:
-            return self.p1
-        else:
-            return self.p2
+    def toggle_turn(self):
+        if self.current_player == 'r':
+            self.current_player = 'b'
+        elif self.current_player == 'b':
+            self.current_player = 'r'
 
-    def check_game_over(self, player):
+    def check_status(self):
+        player = self.current_player
         # M is num columns, N is num rows
 
         # check if board full for draw
         if '*' not in self.rows[0]:
-            print("Draw!")
-            self.game_over = True
-            return self.game_over
+            self.state_terminated = True
+            self.termination_message = "Draw!"
+            return
 
         # check rows
         for row in reversed(self.rows):
@@ -89,9 +70,9 @@ class Connect_R:
                     if row[index] == player:
                         num_to_win -= 1
                         if num_to_win == 0:
-                            self.game_over = True
-                            print("Row Win!: {}".format(player))
-                            return self.game_over
+                            self.state_terminated = True
+                            self.termination_message = "Row Win!: {}".format(player)
+                            return
                         index += 1
                     else:
                         break
@@ -105,9 +86,9 @@ class Connect_R:
                     if self.rows[index][col] == player:
                         num_to_win -= 1
                         if num_to_win == 0:
-                            self.game_over = True
-                            print("Column Win!: {}".format(player))
-                            return self.game_over
+                            self.state_terminated = True
+                            self.termination_message = "Column Win!: {}".format(player)
+                            return
                         index -= 1
                     else:
                         break
@@ -122,9 +103,9 @@ class Connect_R:
                     if self.rows[row_index][col_index] == player:
                         num_to_win -= 1
                         if num_to_win == 0:
-                            self.game_over = True
-                            print("Diagonal Win!: {}".format(player))
-                            return self.game_over
+                            self.state_terminated = True
+                            self.termination_message = "Diagonal Win!: {}".format(player)
+                            return
                     else:
                         num_to_win = 0
                     row_index += 1
@@ -140,23 +121,12 @@ class Connect_R:
                     if self.rows[row_index][col_index] == player:
                         num_to_win -= 1
                         if num_to_win == 0:
-                            self.game_over = True
-                            print("Diagonal 2 Win!")
-                            return self.game_over
+                            self.state_terminated = True
+                            self.termination_message = "Diagonal 2 Win!"
+                            return
                     else:
                         num_to_win = 0
                     row_index -= 1
                     col_index += 1
 
 
-if __name__ == "__main__":
-    pass
-game = Connect_R()
-game.draw_board()
-
-while not game.game_over:
-    # Represents one iteration or turn
-    game.prompt_move()
-    game.draw_board()
-    game.check_game_over(game.p1)
-    game.check_game_over(game.p2)
