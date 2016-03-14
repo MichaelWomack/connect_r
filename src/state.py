@@ -70,7 +70,6 @@ def toggle_state_player(self, current_player):
 def generate_states(state, player=None):
     if player is None:
         player = toggle_state_player()
-
     for col in range(state.M):
         new_state = Connect_R()
         new_state.place_move(col, player)
