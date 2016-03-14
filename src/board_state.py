@@ -38,12 +38,23 @@ class BoardState:
             if self.is_empty(bottom_index, col):
                 self.rows[bottom_index][col] = player
                 placed = True
+                self.check_status()
+                self.toggle_turn()
             else:
                 bottom_index -= 1
 
+    def col_is_full(self, col):
+        return self.rows[0][col] != '*'
 
     def is_empty(self, row, col):
         return self.rows[row][col] == '*'
+
+    def is_empty_state(self):
+        row_index = self.N - 1
+        for col in self.rows[row_index]:
+            if self.is_empty(row_index, col):
+                return False
+        return True
 
     def toggle_turn(self):
         if self.current_player == 'r':

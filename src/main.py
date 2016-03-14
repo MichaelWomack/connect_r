@@ -1,11 +1,12 @@
 from board_state import BoardState
+from state import StateUtils
 
 class ConnectR():
     """class to create connect r """
 
     def __init__(self):
         #self.game_setup()
-        self.game = BoardState(7, 6, 4)
+        self.game = BoardState(5, 4, 3)
 
     def game_setup(self):
         try:
@@ -34,17 +35,16 @@ class ConnectR():
 
     def init(self):
         # represents one turn iteration
+        state_util = StateUtils(self.game)
         while not self.game.state_terminated:
             self.game.draw_board()
             self.prompt_move()
-            self.game.check_status()
-            self.game.toggle_turn()
+            state_util.generate_states(self.game)
 
-        self.game.draw_board()
         print(self.game.termination_message)
 
 
 if __name__ == "__main__":
-        # Represents one iteration or turn
+
         game = ConnectR()
         game.init()

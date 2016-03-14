@@ -1,5 +1,6 @@
-from connect_r import Connect_R
-
+from board_state import BoardState
+import time
+import copy
 
 #def MiniMax-Decision(state) returns an action
 
@@ -52,28 +53,33 @@ from connect_r import Connect_R
 class StateUtils():
     """class to generate game states and handle utilities"""
 
-    def __init__(self, M, N):
-        self.current_player = None
+    def __init__(self, game):
         self.depth = 0
-        self.num_cols = M
-        self.num_rows = N
-
-def toggle_state_player(self, current_player):
-    if current_player == 'r':
-        return 'b'
-    else:
-        return 'r'
+        self.root_state = game
 
     # have to know player turn ????
     # generate state based on the current game state
         # pass in game current player
-def generate_states(state, player=None):
-    if player is None:
-        player = toggle_state_player()
-    for col in range(state.M):
-        new_state = Connect_R()
-        new_state.place_move(col, player)
-        generate_states(new_state)
+    def generate_states(self, state, depth=3):
+        if depth != 0:
+            for col in range(state.M):
+                if not state.col_is_full(col):
+                    new_state = BoardState(self.root_state.M, self.root_state.N, self.root_state.R)
+                    new_state.rows = copy.deepcopy(state.rows)
+                    new_state.current_player = state.current_player
+                    print()
+                    new_state.place_move(col, new_state.current_player)
+                    new_state.draw_board()
+                    time.sleep(3)
+
+
+                    #self.generate_states(new_state, depth=depth - 1)
+
+
+
+
+
+
 
 
 
