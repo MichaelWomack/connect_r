@@ -54,26 +54,30 @@ class StateUtils():
     """class to generate game states and handle utilities"""
 
     def __init__(self, game):
-        self.depth = 0
+        self.max_depth = 3
         self.root_state = game
 
     # have to know player turn ????
     # generate state based on the current game state
         # pass in game current player
-    def generate_states(self, state, depth=3):
+    def generate_states(self, state, depth):
         if depth != 0:
             for col in range(state.M):
                 if not state.col_is_full(col):
                     new_state = BoardState(self.root_state.M, self.root_state.N, self.root_state.R)
                     new_state.rows = copy.deepcopy(state.rows)
                     new_state.current_player = state.current_player
-                    print()
                     new_state.place_move(col, new_state.current_player)
                     new_state.draw_board()
-                    time.sleep(3)
+                    print()
+                    print("State Depth: ", depth)
+                    current_depth = depth
+                    self.generate_states(new_state, depth=current_depth-1)
+        else:
+            print("Next State Build: ")
 
 
-                    #self.generate_states(new_state, depth=depth - 1)
+
 
 
 

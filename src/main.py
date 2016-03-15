@@ -39,7 +39,7 @@ class ConnectR():
         while not self.game.state_terminated:
             self.game.draw_board()
             self.prompt_move()
-            state_util.generate_states(self.game)
+            state_util.generate_states(self.game, state_util.max_depth)
 
         print(self.game.termination_message)
 
