@@ -61,6 +61,7 @@ class StateUtils():
     # generate state based on the current game state
         # pass in game current player
     def generate_states(self, state, depth):
+        child_values = []
         if depth != 0:
             for col in range(state.M):
                 if not state.col_is_full(col):
@@ -70,11 +71,35 @@ class StateUtils():
                     new_state.place_move(col, new_state.current_player)
                     new_state.draw_board()
                     print()
-                    print("State Depth: ", depth)
                     current_depth = depth
-                    self.generate_states(new_state, depth=current_depth-1)
-        else:
-            print("Next State Build: ")
+                    #print("State Depth: ", depth)
+                    # if depth is odd, max --> if depth even, then min
+
+                    child_values.append(self.generate_states(new_state, depth=current_depth-1))
+            if depth % 2 == 1:
+                max = max(child_values)
+                decision_index = child_values.index(max)
+            elif depth % 2 == 0:
+                min = min(child_values)
+                decision_index = child_values.index(min)
+
+            return decision_index
+
+        # else:
+        #     print(self.get_utility(state))
+        #     return self.get_utility(state)
+        #
+        #
+        #     # evaluate with utility function and return value
+        #     print("Next State Build: ")
+
+    def get_utility(self, state):
+        value = state.check_status()
+
+        if state.current_player == 'r':
+            value *= -1
+        return value
+
 
 
 

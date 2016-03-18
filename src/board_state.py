@@ -38,6 +38,8 @@ class BoardState:
             if self.is_empty(bottom_index, col):
                 self.rows[bottom_index][col] = player
                 placed = True
+
+                # Might need to move this termination function somewhere else
                 self.check_status()
                 self.toggle_turn()
             else:
@@ -62,15 +64,20 @@ class BoardState:
         elif self.current_player == 'b':
             self.current_player = 'r'
 
+    def termination_status(self):
+        return self.check_status() == 1
+
     def check_status(self):
         player = self.current_player
+        value = 0
+        values = []
         # M is num columns, N is num rows
 
         # check if board full for draw
         if '*' not in self.rows[0]:
             self.state_terminated = True
             self.termination_message = "Draw!"
-            return
+            return 0
 
         # check rows
         for row in reversed(self.rows):
@@ -83,9 +90,11 @@ class BoardState:
                         if num_to_win == 0:
                             self.state_terminated = True
                             self.termination_message = "Row Win!: {}".format(player)
-                            return
+                            return 1
                         index += 1
                     else:
+                        values.append(self.R - num_to_win)
+                        # value += (self.R - num_to_win)/self.R
                         break
 
         # check cols
@@ -99,9 +108,10 @@ class BoardState:
                         if num_to_win == 0:
                             self.state_terminated = True
                             self.termination_message = "Column Win!: {}".format(player)
-                            return
+                            return 1
                         index -= 1
                     else:
+                        values.append(self.R - num_to_win)
                         break
 
         # check diagonals L --> R high to low
@@ -116,8 +126,9 @@ class BoardState:
                         if num_to_win == 0:
                             self.state_terminated = True
                             self.termination_message = "Diagonal Win!: {}".format(player)
-                            return
+                            return 1
                     else:
+                        values.append(self.R - num_to_win)
                         num_to_win = 0
                     row_index += 1
                     col_index += 1
@@ -133,11 +144,15 @@ class BoardState:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.state_terminated = True
-                            self.termination_message = "Diagonal 2 Win!"
-                            return
+                            self.termination_message = "Diagonal Win!: {}".format(player)
+                            return 1
                     else:
+                        values.append(self.R - num_to_win)
                         num_to_win = 0
                     row_index -= 1
                     col_index += 1
+
+
+        return sum(values)/len(values)
 
 
