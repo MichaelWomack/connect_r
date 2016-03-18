@@ -1,6 +1,6 @@
 from board_state import BoardState
 import time
-import copy
+import copy, random
 
 #def MiniMax-Decision(state) returns an action
 
@@ -54,51 +54,54 @@ class StateUtils():
     """class to generate game states and handle utilities"""
 
     def __init__(self, game):
-        self.max_depth = 3
+        self.max_depth = 5
         self.root_state = game
+        self.state_value = 0
 
     # have to know player turn ????
     # generate state based on the current game state
         # pass in game current player
     def generate_states(self, state, depth):
+        maximum, minimum = 1, -1
         child_values = []
-        if depth != 0:
+        if depth > 1:
             for col in range(state.M):
                 if not state.col_is_full(col):
                     new_state = BoardState(self.root_state.M, self.root_state.N, self.root_state.R)
                     new_state.rows = copy.deepcopy(state.rows)
                     new_state.current_player = state.current_player
                     new_state.place_move(col, new_state.current_player)
-                    new_state.draw_board()
-                    print()
-                    current_depth = depth
-                    #print("State Depth: ", depth)
-                    # if depth is odd, max --> if depth even, then min
+                    next_depth = depth - 1
+                    child_values.append(self.generate_states(new_state, depth=next_depth))
 
-                    child_values.append(self.generate_states(new_state, depth=current_depth-1))
+        # if depth is odd --> max, if depth even --> min
+            # Max's turn
             if depth % 2 == 1:
-                max = max(child_values)
-                decision_index = child_values.index(max)
+                maximum = max(child_values)
+                self.state_value = maximum
+                if depth == self.max_depth:
+                    if child_values.count(maximum) < 2:
+                        return child_values.index(maximum)
+                    else:
+                        # shake it up if more than one branch has the same max
+                        maxima_indices = [index for index in range(len(child_values)) if child_values[index] == maximum]
+                        return random.choice(maxima_indices)
+                else:
+                    return maximum
+            # Min's turn
             elif depth % 2 == 0:
-                min = min(child_values)
-                decision_index = child_values.index(min)
+                minimum = min(child_values)
+                return minimum
+        else:
+             # evaluate with utility function and return value
+            return self.get_utility(state)
 
-            return decision_index
-
-        # else:
-        #     print(self.get_utility(state))
-        #     return self.get_utility(state)
-        #
-        #
-        #     # evaluate with utility function and return value
-        #     print("Next State Build: ")
 
     def get_utility(self, state):
         value = state.check_status()
-
-        if state.current_player == 'r':
-            value *= -1
+        #print(value)
         return value
+
 
 
 

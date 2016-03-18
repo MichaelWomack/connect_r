@@ -41,7 +41,7 @@ class BoardState:
 
                 # Might need to move this termination function somewhere else
                 self.check_status()
-                self.toggle_turn()
+                #self.toggle_turn()
             else:
                 bottom_index -= 1
 
@@ -64,9 +64,6 @@ class BoardState:
         elif self.current_player == 'b':
             self.current_player = 'r'
 
-    def termination_status(self):
-        return self.check_status() == 1
-
     def check_status(self):
         player = self.current_player
         value = 0
@@ -77,12 +74,13 @@ class BoardState:
         if '*' not in self.rows[0]:
             self.state_terminated = True
             self.termination_message = "Draw!"
-            return 0
+            return .5
 
         # check rows
         for row in reversed(self.rows):
             for col_index in range(self.M - self.R + 1):
                 num_to_win = self.R
+                empty_spaces = 0
                 index = col_index
                 while index < col_index + self.R:
                     if row[index] == player:
@@ -91,16 +89,18 @@ class BoardState:
                             self.state_terminated = True
                             self.termination_message = "Row Win!: {}".format(player)
                             return 1
-                        index += 1
+                    elif row[index] == '*':
+                        empty_spaces += 1
                     else:
                         values.append(self.R - num_to_win)
-                        # value += (self.R - num_to_win)/self.R
                         break
+                    index += 1
 
         # check cols
         for col in range(self.M):
             for row in reversed(range(self.R - 1, self.N)):
                 num_to_win = self.R
+                empty_spaces = 0
                 index = row
                 while index > row - self.R - 1:
                     if self.rows[index][col] == player:
@@ -109,10 +109,12 @@ class BoardState:
                             self.state_terminated = True
                             self.termination_message = "Column Win!: {}".format(player)
                             return 1
-                        index -= 1
+                    elif self.rows[index][col] == '*':
+                        empty_spaces += 1
                     else:
                         values.append(self.R - num_to_win)
                         break
+                    index -= 1
 
         # check diagonals L --> R high to low
         for col in range(self.M - self.R + 1):
@@ -120,6 +122,7 @@ class BoardState:
                 col_index = col
                 row_index = row
                 num_to_win = self.R
+                empty_spaces = 0
                 while col_index in range(self.M) and row_index in range(self.N):
                     if self.rows[row_index][col_index] == player:
                         num_to_win -= 1
@@ -127,6 +130,8 @@ class BoardState:
                             self.state_terminated = True
                             self.termination_message = "Diagonal Win!: {}".format(player)
                             return 1
+                    elif self.rows[row_index][col_index] == '*':
+                        empty_spaces += 1
                     else:
                         values.append(self.R - num_to_win)
                         num_to_win = 0
@@ -139,6 +144,7 @@ class BoardState:
                 col_index = col
                 row_index = row
                 num_to_win = self.R
+                empty_spaces = 0
                 while col_index in range(self.M) and row_index in range(self.N):
                     if self.rows[row_index][col_index] == player:
                         num_to_win -= 1
@@ -146,13 +152,22 @@ class BoardState:
                             self.state_terminated = True
                             self.termination_message = "Diagonal Win!: {}".format(player)
                             return 1
+                    elif self.rows[row_index][col_index] == '*':
+                        empty_spaces += 1
                     else:
                         values.append(self.R - num_to_win)
                         num_to_win = 0
                     row_index -= 1
                     col_index += 1
 
+        very_high = self.R - 1
+        high = self.R - 2
 
-        return sum(values)/len(values)
+        very_high_count = values.count(very_high)
+        high_count = values.count(high)
+
+        evaluation = ((very_high_count * very_high) + (high_count * high))/(2 * self.R)
+
+        return evaluation
 
 
