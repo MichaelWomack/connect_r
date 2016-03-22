@@ -56,13 +56,12 @@ class StateUtils():
     def __init__(self, game):
         self.max_depth = 5
         self.root_state = game
-        self.state_value = 0
+
 
     # have to know player turn ????
     # generate state based on the current game state
         # pass in game current player
     def generate_states(self, state, depth):
-        maximum, minimum = 1, -1
         child_values = []
         if depth > 1:
             for col in range(state.M):
@@ -78,7 +77,6 @@ class StateUtils():
             # Max's turn
             if depth % 2 == 1:
                 maximum = max(child_values)
-                self.state_value = maximum
                 if depth == self.max_depth:
                     if child_values.count(maximum) < 2:
                         return child_values.index(maximum)
@@ -92,15 +90,17 @@ class StateUtils():
             elif depth % 2 == 0:
                 minimum = min(child_values)
                 return minimum
+
+
         else:
              # evaluate with utility function and return value
-            return self.get_utility(state)
+            return state.check_status()
 
 
-    def get_utility(self, state):
-        value = state.check_status()
-        #print(value)
-        return value
+    # def get_utility(self, state):
+    #     value = state.check_status()
+    #     print(value)
+    #     return value
 
 
 

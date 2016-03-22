@@ -24,6 +24,7 @@ class BoardState:
         self.rows = [['*' for col in range(self.M)] for row in range(0, self.N)]
         self.state_terminated = False
         self.termination_message = None
+        self.state_value = 0
 
 
     def draw_board(self):
@@ -66,7 +67,6 @@ class BoardState:
 
     def check_status(self):
         player = self.current_player
-        value = 0
         values = []
         # M is num columns, N is num rows
 
@@ -74,7 +74,7 @@ class BoardState:
         if '*' not in self.rows[0]:
             self.state_terminated = True
             self.termination_message = "Draw!"
-            return .5
+            return 0
 
         # check rows
         for row in reversed(self.rows):
@@ -102,7 +102,7 @@ class BoardState:
                 num_to_win = self.R
                 empty_spaces = 0
                 index = row
-                while index > row - self.R - 1:
+                while index > row - self.R:
                     if self.rows[index][col] == player:
                         num_to_win -= 1
                         if num_to_win == 0:
@@ -112,7 +112,7 @@ class BoardState:
                     elif self.rows[index][col] == '*':
                         empty_spaces += 1
                     else:
-                        values.append(self.R - num_to_win)
+                        values.append(self.R - num_to_win + empty_spaces)
                         break
                     index -= 1
 
@@ -130,11 +130,11 @@ class BoardState:
                             self.state_terminated = True
                             self.termination_message = "Diagonal Win!: {}".format(player)
                             return 1
-                    elif self.rows[row_index][col_index] == '*':
-                        empty_spaces += 1
+                    # elif self.rows[row_index][col_index] == '*':
+                    #     empty_spaces += 1
                     else:
                         values.append(self.R - num_to_win)
-                        num_to_win = 0
+                        break
                     row_index += 1
                     col_index += 1
 
@@ -152,8 +152,8 @@ class BoardState:
                             self.state_terminated = True
                             self.termination_message = "Diagonal Win!: {}".format(player)
                             return 1
-                    elif self.rows[row_index][col_index] == '*':
-                        empty_spaces += 1
+                    # elif self.rows[row_index][col_index] == '*':
+                    #     empty_spaces += 1
                     else:
                         values.append(self.R - num_to_win)
                         num_to_win = 0
@@ -162,12 +162,26 @@ class BoardState:
 
         very_high = self.R - 1
         high = self.R - 2
+        med = self.R - 3
 
         very_high_count = values.count(very_high)
         high_count = values.count(high)
+        med_count = values.count(med)
 
-        evaluation = ((very_high_count * very_high) + (high_count * high))/(2 * self.R)
+        if very_high_count > 0:
+            return very_high/self.R + (.01 * very_high_count)
 
-        return evaluation
+        elif high_count > 0:
+            return high/self.R + (.01 * high_count)
+
+        elif med_count > 0:
+            return med/self.R + .01 * (med_count)
+
+        else:
+            return .5
+
+        #     evaluation = ((very_high_count * very_high) + (high * high_count)) / (self.R * self.R)
+        # #     evaluation =
+        #     return evaluation
 
 

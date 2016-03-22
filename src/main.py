@@ -7,7 +7,7 @@ class ConnectR():
     def __init__(self):
         self.depth = 5
         #self.game_setup()
-        self.game = BoardState(5, 4, 3)
+        self.game = BoardState(5, 4, 4)
 
 
     def game_setup(self):
@@ -41,7 +41,7 @@ class ConnectR():
         state_util = StateUtils(self.game)
         while not self.game.state_terminated:
             self.game.draw_board()
-            print("Board Value: ", state_util.state_value)
+            print("Board Value: ", self.game.check_status())
             player = self.game.current_player
             if player == 'r':
                 self.prompt_move()
@@ -53,6 +53,7 @@ class ConnectR():
 
         print(self.game.termination_message)
         self.game.draw_board()
+        print("Board Value: ", self.game.check_status())
 
 if __name__ == "__main__":
 
