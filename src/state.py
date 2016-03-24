@@ -61,7 +61,7 @@ class StateUtils():
     # have to know player turn ????
     # generate state based on the current game state
         # pass in game current player
-    def generate_states(self, state, depth):
+    def mini_max(self, state, depth):
         child_values = []
         if depth > 1:
             for col in range(state.M):
@@ -71,14 +71,17 @@ class StateUtils():
                     new_state.current_player = state.current_player
                     new_state.place_move(col, new_state.current_player)
                     next_depth = depth - 1
-                    child_values.append(self.generate_states(new_state, depth=next_depth))
+                    child_values.append(self.mini_max(new_state, depth=next_depth))
 
         # if depth is odd --> max, if depth even --> min
             # Max's turn
             if depth % 2 == 1:
                 maximum = max(child_values)
                 if depth == self.max_depth:
-                    if child_values.count(maximum) < 2:
+                    # if ai first, goes to middle position
+                    if state.is_empty_state():
+                        return int(state.R / 2)
+                    elif child_values.count(maximum) < 2:
                         return child_values.index(maximum)
                     else:
                         # shake it up if more than one branch has the same max
@@ -90,10 +93,9 @@ class StateUtils():
             elif depth % 2 == 0:
                 minimum = min(child_values)
                 return minimum
-
-
         else:
              # evaluate with utility function and return value
+            print(" Current Player at evaluation ", state.current_player)
             return state.check_status()
 
 
@@ -101,27 +103,3 @@ class StateUtils():
     #     value = state.check_status()
     #     print(value)
     #     return value
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# if __name__ == "__main__":
-#     game = Connect_R()
-#     game.draw_board()
-#     # game.draw_board()
-#     # while not game.game_over:
-#     #     # Represents one iteration or turn
-#     #     game.prompt_move()
-#     #     game.draw_board()
-#     #     game.check_game_over(game.p1)
-#     #     game.check_game_over(game.p2)

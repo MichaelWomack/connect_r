@@ -16,6 +16,7 @@ class BoardState:
 
     def __init__(self, width, height, win_req):
         self.current_player = 'r'
+        self.ai = None
 
         self.M = width
         self.N = height
@@ -28,6 +29,8 @@ class BoardState:
 
 
     def draw_board(self):
+        col_names = "  ".join([str(i) for i in range(self.M)])
+        print(col_names)
         for i in range(0, self.N):
             print("  ".join(self.rows[i]))
 
@@ -39,10 +42,10 @@ class BoardState:
             if self.is_empty(bottom_index, col):
                 self.rows[bottom_index][col] = player
                 placed = True
-
                 # Might need to move this termination function somewhere else
                 self.check_status()
-                #self.toggle_turn()
+                if not self.state_terminated:
+                    self.toggle_turn()
             else:
                 bottom_index -= 1
 
@@ -54,7 +57,7 @@ class BoardState:
 
     def is_empty_state(self):
         row_index = self.N - 1
-        for col in self.rows[row_index]:
+        for col in range(self.M):
             if self.is_empty(row_index, col):
                 return False
         return True
