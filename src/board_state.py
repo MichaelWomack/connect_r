@@ -58,7 +58,7 @@ class BoardState:
     def is_empty_state(self):
         row_index = self.N - 1
         for col in range(self.M):
-            if self.is_empty(row_index, col):
+            if not self.is_empty(row_index, col):
                 return False
         return True
 

@@ -79,8 +79,9 @@ class StateUtils():
                 maximum = max(child_values)
                 if depth == self.max_depth:
                     # if ai first, goes to middle position
+                    print("Empty: ", state.is_empty_state())
                     if state.is_empty_state():
-                        return int(state.R / 2)
+                        return int(state.M / 2)
                     elif child_values.count(maximum) < 2:
                         return child_values.index(maximum)
                     else:
@@ -95,7 +96,7 @@ class StateUtils():
                 return minimum
         else:
              # evaluate with utility function and return value
-            print(" Current Player at evaluation ", state.current_player)
+            #print(" Current Player at evaluation ", state.current_player)
             return state.check_status()
 
 
