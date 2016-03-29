@@ -96,7 +96,6 @@ class StateUtils():
                 return minimum
         else:
              # evaluate with utility function and return value
-            #print(" Current Player at evaluation ", state.current_player)
             return state.check_status()
 
 

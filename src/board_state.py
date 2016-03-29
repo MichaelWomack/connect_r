@@ -70,7 +70,10 @@ class BoardState:
 
     def check_status(self):
         player = self.current_player
+
+        # stores tuples of num in row, and
         values = []
+
         # M is num columns, N is num rows
 
         # check if board full for draw
@@ -94,8 +97,11 @@ class BoardState:
                             return 1
                     elif row[index] == '*':
                         empty_spaces += 1
+                        if index == col_index + self.R - 1:
+                            values.append((num_to_win, empty_spaces))
+                    # add accumulated values if opponent's piece or last iteration of loop
                     else:
-                        values.append(self.R - num_to_win)
+                        values.append((num_to_win, empty_spaces))
                         break
                     index += 1
 
@@ -114,8 +120,12 @@ class BoardState:
                             return 1
                     elif self.rows[index][col] == '*':
                         empty_spaces += 1
+                        if index - num_to_win >= 0:
+                            values.append((num_to_win, num_to_win))
+                        else:
+                            values.append((num_to_win, empty_spaces))
+                        break
                     else:
-                        values.append(self.R - num_to_win + empty_spaces)
                         break
                     index -= 1
 
@@ -133,11 +143,12 @@ class BoardState:
                             self.state_terminated = True
                             self.termination_message = "Diagonal Win!: {}".format(player)
                             return 1
-                    # elif self.rows[row_index][col_index] == '*':
-                    #     empty_spaces += 1
+                    elif self.rows[row_index][col_index] == '*':
+                        empty_spaces += 1
                     else:
-                        values.append(self.R - num_to_win)
-                        break
+                        values.append((num_to_win, empty_spaces))
+                        num_to_win = self.R
+                        empty_spaces = 0
                     row_index += 1
                     col_index += 1
 
@@ -155,11 +166,12 @@ class BoardState:
                             self.state_terminated = True
                             self.termination_message = "Diagonal Win!: {}".format(player)
                             return 1
-                    # elif self.rows[row_index][col_index] == '*':
-                    #     empty_spaces += 1
+                    elif self.rows[row_index][col_index] == '*':
+                        empty_spaces += 1
                     else:
-                        values.append(self.R - num_to_win)
-                        num_to_win = 0
+                        values.append((num_to_win, empty_spaces))
+                        num_to_win = self.R
+                        empty_spaces = 0
                     row_index -= 1
                     col_index += 1
 
@@ -167,24 +179,28 @@ class BoardState:
         high = self.R - 2
         med = self.R - 3
 
-        very_high_count = values.count(very_high)
-        high_count = values.count(high)
-        med_count = values.count(med)
+    # (num to win, num empty spaces) tuple represents the ratio of pieces in a row available spaces to win
+        very_high_count = values.count((1, 1))
+        high_count = values.count((2, 2))
+        med_count = values.count((3, 3))
 
-        if very_high_count > 0:
-            return very_high/self.R + (.01 * very_high_count)
+        if self.is_empty_state():
+            return 0
+
+        elif very_high_count > 0:
+           return very_high/self.R #+ (.09 * very_high_count)) + (.05 * high_count) + (.01 * med_count)
 
         elif high_count > 0:
-            return high/self.R + (.01 * high_count)
+            return (high/(self.R * 2)) #+ .05 * high_count) + (.01 * med_count)
 
         elif med_count > 0:
-            return med/self.R + .01 * (med_count)
+            return med/(self.R*3) #+ .01 * med_count
 
         else:
-            return .5
+            return 0
 
-        #     evaluation = ((very_high_count * very_high) + (high * high_count)) / (self.R * self.R)
-        # #     evaluation =
-        #     return evaluation
+
+
+
 
 
