@@ -9,7 +9,6 @@ class ConnectR():
         self.game = BoardState(5, 4, 3)
         self.game_setup()
 
-
     def game_setup(self):
         try:
             M = int(input('Enter the width: ')) # Columns
@@ -58,7 +57,10 @@ class ConnectR():
         state_util.max_depth = self.depth
         while not self.game.state_terminated:
             self.game.draw_board()
-            print("Board Value: {}".format(self.game.check_status()))
+
+            # displays utility of current state and player that is favored.
+            # positive indicates that player providing input is favored in state.
+            print("Board Value: {}".format(-state_util.get_utility(self.game)))
             print("Current Player: {} AI: {}\n".format(self.game.current_player, self.game.ai))
             self.prompt_move(state_util)
 

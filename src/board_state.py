@@ -127,8 +127,8 @@ class BoardState:
                         empty_spaces += 1
                         if index - num_to_win >= 0:
                             values.append((num_to_win, num_to_win))
-                        else:
-                            values.append((num_to_win, empty_spaces))
+                        # else:
+                        #     values.append((num_to_win, empty_spaces))
                         break
                     else:
                         break
@@ -146,7 +146,7 @@ class BoardState:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.state_terminated = True
-                            self.termination_message = "Diagonal Win!: {}".format(player)
+                            self.termination_message = "Diagonal Win-Top Left to Bottom Right!: {}".format(player)
                             return 1
                     elif self.rows[row_index][col_index] == '*':
                         empty_spaces += 1
@@ -169,7 +169,7 @@ class BoardState:
                         num_to_win -= 1
                         if num_to_win == 0:
                             self.state_terminated = True
-                            self.termination_message = "Diagonal Win!: {}".format(player)
+                            self.termination_message = "Diagonal Win - Bottom Left to Top Right!: {}".format(player)
                             return 1
                     elif self.rows[row_index][col_index] == '*':
                         empty_spaces += 1
@@ -189,17 +189,14 @@ class BoardState:
         high_count = values.count((2, 2))
         med_count = values.count((3, 3))
 
-        if self.is_empty_state():
-            return 0
-
-        elif very_high_count > 0:
-           return ((very_high/self.R) * very_high_count) + (high/math.pow(self.R, 2)) * high_count
+        if very_high_count > 0:
+           return ((very_high/self.R) * very_high_count) #+ (high/math.pow(self.R, 2)) * high_count
 
         elif high_count > 0:
-            return ((high/math.pow(self.R, 2)) * high_count) + med/(math.pow(self.R, 3)) * med_count
+            return ((high/math.pow(self.R, 2)) * high_count) #+ med/(math.pow(self.R, 3)) * med_count
 
         elif med_count > 0:
-            return med/(math.pow(self.R, 3)) * med_count
+            return (med/math.pow(self.R, 3)) * med_count
 
         else:
             return 0
