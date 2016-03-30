@@ -21,6 +21,10 @@ class ConnectR():
             assert self.depth % 2 == 1
             self.game = BoardState(M, N, R)
             self.game.ai = ai
+            if self.game.ai == 'r':
+                self.game.opponent = 'b'
+            else:
+                self.game.opponent = 'r'
         except ValueError:
             print("Incorrect game setup...\n")
             self.game_setup()
@@ -30,7 +34,6 @@ class ConnectR():
 
     def prompt_move(self, state_util):
         player = self.game.current_player
-        print("Current Player: {} AI: {}".format(player, self.game.ai))
         if player == self.game.ai:
             col = state_util.mini_max(self.game, state_util.max_depth)
             self.game.place_move(col, player)
@@ -52,9 +55,11 @@ class ConnectR():
     def init(self):
         # represents one turn iteration
         state_util = StateUtils(self.game)
+        state_util.max_depth = self.depth
         while not self.game.state_terminated:
             self.game.draw_board()
-            print("Board Value: ", self.game.check_status())
+            print("Board Value: {}".format(self.game.check_status()))
+            print("Current Player: {} AI: {}\n".format(self.game.current_player, self.game.ai))
             self.prompt_move(state_util)
 
         print(self.game.termination_message)

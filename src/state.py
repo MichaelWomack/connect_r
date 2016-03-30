@@ -1,39 +1,39 @@
 from board_state import BoardState
-import time
 import copy, random
 
-#def MiniMax-Decision(state) returns an action
 
-#def Max-Value(state) returns a utility value
-    #if terminal-test(state) then return utility(state)
+# def MiniMax-Decision(state) returns an action
 
-    #v --> -infinity
-    #for each action in actions(state)
-        # v --> Max(v, Min-Value(state, action))
-    # return v
+# def Max-Value(state) returns a utility value
+# if terminal-test(state) then return utility(state)
 
-
-#def Min-Value(state) returns a utility value
-    # if terminal-test(state) then return utility(state)
-
-    # v --> infinity
-    # for each action in actions(state)
-        # v--> Min(v, Max-Value(state, action))
-    # return v
+# v --> -infinity
+# for each action in actions(state)
+# v --> Max(v, Min-Value(state, action))
+# return v
 
 
+# def Min-Value(state) returns a utility value
+# if terminal-test(state) then return utility(state)
 
-#CREATE:
-    # function that takes in state and generates all possible states
-    # given the valid rules.
+# v --> infinity
+# for each action in actions(state)
+# v--> Min(v, Max-Value(state, action))
+# return v
 
-    # Utility function that takes in state and player, then generates
-    # a numeric value denoting the quality of the state for the player.
 
-    # Terminal test function that takes state and returns whether the game
-    # is over or not.
 
-    # Recursive min - max function.
+# CREATE:
+# function that takes in state and generates all possible states
+# given the valid rules.
+
+# Utility function that takes in state and player, then generates
+# a numeric value denoting the quality of the state for the player.
+
+# Terminal test function that takes state and returns whether the game
+# is over or not.
+
+# Recursive min - max function.
 # game = Connect_R()
 # state = game.rows
 
@@ -43,10 +43,10 @@ import copy, random
 
 
 # Shared Functions of State and Connect_R:
-    # draw_board()/print_state()
-    # place_move()
-    # is_empty()
-    # toggle_turn()
+# draw_board()/print_state()
+# place_move()
+# is_empty()
+# toggle_turn()
 
 
 
@@ -54,16 +54,12 @@ class StateUtils():
     """class to generate game states and handle utilities"""
 
     def __init__(self, game):
-        self.max_depth = 5
+        self.max_depth = None
         self.root_state = game
 
-
-    # have to know player turn ????
-    # generate state based on the current game state
-        # pass in game current player
     def mini_max(self, state, depth):
         child_values = []
-        if depth > 1:
+        if depth > 1 and state.available_spaces():
             for col in range(state.M):
                 if not state.col_is_full(col):
                     new_state = BoardState(self.root_state.M, self.root_state.N, self.root_state.R)
@@ -73,13 +69,12 @@ class StateUtils():
                     next_depth = depth - 1
                     child_values.append(self.mini_max(new_state, depth=next_depth))
 
-        # if depth is odd --> max, if depth even --> min
+                    # if depth is odd --> max, if depth even --> min
             # Max's turn
             if depth % 2 == 1:
                 maximum = max(child_values)
                 if depth == self.max_depth:
                     # if ai first, goes to middle position
-                    print("Empty: ", state.is_empty_state())
                     if state.is_empty_state():
                         return int(state.M / 2)
                     elif child_values.count(maximum) < 2:
@@ -95,11 +90,14 @@ class StateUtils():
                 minimum = min(child_values)
                 return minimum
         else:
-             # evaluate with utility function and return value
-            return state.check_status()
+            return self.get_utility(state)
 
 
-    # def get_utility(self, state):
-    #     value = state.check_status()
-    #     print(value)
-    #     return value
+    def get_utility(self, state):
+        # evaluate with utility function and return value
+        ai_status = state.check_status(state.ai)
+        opponent_status = state.check_status(state.opponent)
+        if ai_status > opponent_status:
+            return ai_status
+        else:
+            return -opponent_status
