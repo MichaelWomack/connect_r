@@ -18,6 +18,7 @@ class ConnectR():
             ai = input('Red will go first. Enter AI color (r or b): ')
             assert ai == 'r' or ai == 'b'
             self.depth = int(input('Enter the max search depth (odd only): '))
+            assert self.depth % 2 == 1
             self.game = BoardState(M, N, R)
             self.game.ai = ai
         except ValueError:
@@ -54,14 +55,6 @@ class ConnectR():
         while not self.game.state_terminated:
             self.game.draw_board()
             print("Board Value: ", self.game.check_status())
-            # player = self.game.current_player
-            # if player == 'r':
-            #     self.prompt_move()
-            # else:
-            #     move = state_util.generate_states(self.game, state_util.max_depth)
-            #     self.game.place_move(move, 'b')
-            # print()
-            # self.game.toggle_turn()
             self.prompt_move(state_util)
 
         print(self.game.termination_message)

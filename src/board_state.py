@@ -1,3 +1,5 @@
+import math
+
 class BoardState:
     'creates connect r'
 
@@ -71,9 +73,8 @@ class BoardState:
     def check_status(self):
         player = self.current_player
 
-        # stores tuples of num in row, and
+        # stores tuple of values that represent number to win vs number of valid spots left to win
         values = []
-
         # M is num columns, N is num rows
 
         # check if board full for draw
@@ -122,8 +123,8 @@ class BoardState:
                         empty_spaces += 1
                         if index - num_to_win >= 0:
                             values.append((num_to_win, num_to_win))
-                        else:
-                            values.append((num_to_win, empty_spaces))
+                        # else:
+                        #     values.append((num_to_win, empty_spaces))
                         break
                     else:
                         break
@@ -184,22 +185,30 @@ class BoardState:
         high_count = values.count((2, 2))
         med_count = values.count((3, 3))
 
+        val = 0
+
+        #print(values)
         if self.is_empty_state():
             return 0
 
         elif very_high_count > 0:
-           return very_high/self.R #+ (.09 * very_high_count)) + (.05 * high_count) + (.01 * med_count)
+           val = ((very_high/self.R) * very_high_count) + (high/math.pow(self.R, 2)) * high_count
 
         elif high_count > 0:
-            return (high/(self.R * 2)) #+ .05 * high_count) + (.01 * med_count)
+            val = ((high/math.pow(self.R, 2)) * high_count) + med/(math.pow(self.R, 3)) * med_count
 
         elif med_count > 0:
-            return med/(self.R*3) #+ .01 * med_count
+            val = med/(math.pow(self.R, 3)) * med_count
 
         else:
             return 0
 
-
+        return val
+        #
+        # if player == self.ai:
+        #     return val
+        # else:
+        #     return -val
 
 
 
