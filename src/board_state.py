@@ -87,6 +87,30 @@ class BoardState:
             self.termination_message = "Draw!"
             return 0
 
+            # check cols
+        for col in range(self.M):
+            for row in reversed(range(self.R - 1, self.N)):
+                num_to_win = self.R
+                empty_spaces = 0
+                index = row
+                while index > row - self.R:
+                    if self.rows[index][col] == player:
+                        num_to_win -= 1
+                        if num_to_win == 0:
+                            self.state_terminated = True
+                            self.termination_message = "Column Win!: {}".format(player)
+                            return 1
+                    elif self.rows[index][col] == '*':
+                        empty_spaces += 1
+                        if index - num_to_win >= 0:
+                            values.append((num_to_win, num_to_win, 1))
+                        # else:
+                        #     values.append((num_to_win, empty_spaces))
+                        break
+                    else:
+                        break
+                    index -= 1
+
         # check rows
         for row in reversed(self.rows):
             for col_index in range(self.M - self.R + 1):
@@ -103,36 +127,12 @@ class BoardState:
                     elif row[index] == '*':
                         empty_spaces += 1
                         if index == col_index + self.R - 1:
-                            values.append((num_to_win, empty_spaces))
+                            values.append((num_to_win, empty_spaces, 1))
                     # add accumulated values if opponent's piece or last iteration of loop
                     else:
-                        values.append((num_to_win, empty_spaces))
+                        values.append((num_to_win, empty_spaces, 1))
                         break
                     index += 1
-
-        # check cols
-        for col in range(self.M):
-            for row in reversed(range(self.R - 1, self.N)):
-                num_to_win = self.R
-                empty_spaces = 0
-                index = row
-                while index > row - self.R:
-                    if self.rows[index][col] == player:
-                        num_to_win -= 1
-                        if num_to_win == 0:
-                            self.state_terminated = True
-                            self.termination_message = "Column Win!: {}".format(player)
-                            return 1
-                    elif self.rows[index][col] == '*':
-                        empty_spaces += 1
-                        if index - num_to_win >= 0:
-                            values.append((num_to_win, num_to_win))
-                        # else:
-                        #     values.append((num_to_win, empty_spaces))
-                        break
-                    else:
-                        break
-                    index -= 1
 
         # check diagonals L --> R high to low
         for col in range(self.M - self.R + 1):
@@ -151,7 +151,7 @@ class BoardState:
                     elif self.rows[row_index][col_index] == '*':
                         empty_spaces += 1
                     else:
-                        values.append((num_to_win, empty_spaces))
+                        values.append((num_to_win, empty_spaces, 2))
                         num_to_win = self.R
                         empty_spaces = 0
                     row_index += 1
@@ -174,7 +174,7 @@ class BoardState:
                     elif self.rows[row_index][col_index] == '*':
                         empty_spaces += 1
                     else:
-                        values.append((num_to_win, empty_spaces))
+                        values.append((num_to_win, empty_spaces, 2))
                         num_to_win = self.R
                         empty_spaces = 0
                     row_index -= 1
@@ -184,19 +184,30 @@ class BoardState:
         high = self.R - 2
         med = self.R - 3
 
-    # (num to win, num empty spaces) tuple represents the ratio of pieces in a row available spaces to win
-        very_high_count = values.count((1, 1))
-        high_count = values.count((2, 2))
-        med_count = values.count((3, 3))
+    # (num to win, num empty spaces, 1 or 2) tuple represents the ratio of pieces in a row available spaces to win
+    # 1 or 2 in last tuple attr distinguished rows and cols from diagonals
+
+        # cols/rows take precedence for blocking
+        very_high_count = values.count((1, 1, 1))
+
+        # diags/rows second to row/col
+        very_high_count_beta = values.count((1, 1, 2))
+
+        # difference in rows/cols and diags unimportant at this level.
+        high_count = values.count((2, 2, 1)) + values.count((2, 2, 2))
+        med_count = values.count((3, 3, 1)) + values.count((3, 3, 2))
 
         if very_high_count > 0:
            return ((very_high/self.R) * very_high_count) #+ (high/math.pow(self.R, 2)) * high_count
 
+        elif very_high_count_beta > 0:
+            return ((very_high/math.pow(self.R, 2)) * very_high_count_beta) #+ med/(math.pow(self.R, 3)) * med_count
+
         elif high_count > 0:
-            return ((high/math.pow(self.R, 2)) * high_count) #+ med/(math.pow(self.R, 3)) * med_count
+            return ((high/math.pow(self.R, 3)) * high_count)
 
         elif med_count > 0:
-            return (med/math.pow(self.R, 3)) * med_count
+            return (med/math.pow(self.R, 4)) * med_count
 
         else:
             return 0

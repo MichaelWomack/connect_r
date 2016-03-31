@@ -68,8 +68,14 @@ class StateUtils():
                     new_state.place_move(col, new_state.current_player)
                     next_depth = depth - 1
                     child_values.append(self.mini_max(new_state, depth=next_depth))
+                else:
+                    # just a placeholder to maintain branch/col indices
+                    if depth % 2 == 1:
+                        child_values.append(-100)
+                    elif depth % 2 == 0:
+                        child_values.append(100)
 
-                    # if depth is odd --> max, if depth even --> min
+         # if depth is odd --> max, if depth even --> min
             # Max's turn
             if depth % 2 == 1:
                 maximum = max(child_values)
